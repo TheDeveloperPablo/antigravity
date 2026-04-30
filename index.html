@@ -1650,18 +1650,62 @@
     <button id="translator-btn" title="Cambiar idioma">🌐</button>
   </div>
 
+  <div id="google_translate_element" style="display:none;position:absolute;left:-9999px"></div>
   <script>
     const _langFlags = {es:'🇪🇸',en:'🇺🇸',fr:'🇫🇷',de:'🇩🇪',it:'🇮🇹',pt:'🇵🇹',ja:'🇯🇵','zh-CN':'🇨🇳',ar:'🇸🇦',ko:'🇰🇷'};
-    const _pageUrl = 'https://thedeveloperpablo.github.io/antigravity/';
+
+    function googleTranslateElementInit() {
+      new google.translate.TranslateElement({
+        pageLanguage:'es',
+        includedLanguages:'en,fr,de,it,pt,ja,zh-CN,ar,ko',
+        autoDisplay:false
+      },'google_translate_element');
+    }
 
     function selectLang(el, lang) {
-      if (lang === 'es') {
-        window.location.href = _pageUrl;
-      } else {
-        window.location.href = 'https://translate.google.com/translate?sl=es&tl=' + lang + '&u=' + encodeURIComponent(_pageUrl);
+      document.querySelectorAll('.lang-opt').forEach(o=>o.classList.remove('active'));
+      el.classList.add('active');
+      document.getElementById('translator-btn').textContent = _langFlags[lang]||'🌐';
+
+      if (lang==='es') {
+        document.cookie='googtrans=; path=/; max-age=0';
+        location.reload();
+        return;
       }
+
+      document.cookie='googtrans=/es/'+lang+'; path=/';
+
+      let n=0;
+      (function try_gt(){
+        const sel=document.querySelector('select.goog-te-combo');
+        if(sel){
+          sel.value=lang;
+          const e=document.createEvent('HTMLEvents');
+          e.initEvent('change',true,true);
+          sel.dispatchEvent(e);
+        } else if(++n<15){
+          setTimeout(try_gt,200);
+        } else {
+          location.reload();
+        }
+      })();
     }
+
+    // Restore flag on reload
+    (function(){
+      const m=document.cookie.match(/googtrans=\/es\/([^;]+)/);
+      if(m){
+        const l=decodeURIComponent(m[1]);
+        if(_langFlags[l]){
+          document.getElementById('translator-btn').textContent=_langFlags[l];
+          document.querySelectorAll('.lang-opt').forEach(o=>
+            o.classList.toggle('active',o.getAttribute('onclick').includes("'"+l+"'"))
+          );
+        }
+      }
+    })();
   </script>
+  <script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 </body>
 
 </html>
