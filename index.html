@@ -1666,28 +1666,23 @@
       },'google_translate_element');
     }
 
-    // Restore flag after reload
+    // Restore button flag from cookie
     (function(){
-      const saved = sessionStorage.getItem('ag_lang');
-      if (saved && saved !== 'es') {
-        document.getElementById('translator-btn').textContent = _langFlags[saved]||'🌐';
-        document.querySelectorAll('.lang-opt').forEach(o=>{
-          if(o.getAttribute('onclick').includes("'"+saved+"'")) o.classList.add('active');
-          else o.classList.remove('active');
-        });
+      const m = document.cookie.match(/googtrans=\/es\/([^;]+)/);
+      if (m) {
+        const lang = decodeURIComponent(m[1]);
+        document.getElementById('translator-btn').textContent = _langFlags[lang]||'🌐';
+        document.querySelectorAll('.lang-opt').forEach(o=>
+          o.classList.toggle('active', o.getAttribute('onclick').includes("'"+lang+"'"))
+        );
       }
     })();
 
     function selectLang(el, lang) {
-      sessionStorage.setItem('ag_lang', lang);
-      document.getElementById('translator-btn').textContent = _langFlags[lang]||'🌐';
-      const exp = 'expires=Thu, 01 Jan 1970 00:00:00 UTC';
       if (lang==='es') {
-        document.cookie=`googtrans=; ${exp}; path=/`;
-        document.cookie=`googtrans=; ${exp}; path=/; domain=${location.hostname}`;
+        document.cookie='googtrans=; path=/; max-age=0';
       } else {
-        document.cookie=`googtrans=/es/${lang}; path=/`;
-        document.cookie=`googtrans=/es/${lang}; path=/; domain=${location.hostname}`;
+        document.cookie='googtrans=/es/'+lang+'; path=/';
       }
       location.reload();
     }
