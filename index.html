@@ -883,7 +883,7 @@
   <!-- NAV -->
   <nav>
     <div class="nav-inner">
-      <a class="nav-logo" href="#">Antigravity</a>
+      <a class="nav-logo" href="#" translate="no">Antigravity</a>
       <ul class="nav-links">
         <li><a href="#features">Producto</a></li>
         <li><a href="#showcase">Diseño</a></li>
@@ -1393,7 +1393,7 @@
     const logo = document.querySelector('.nav-logo');
     if (logo) {
       logo.innerHTML = [...logo.textContent].map((c, i) =>
-        `<span class="logo-char" style="--i:${i}">${c === ' ' ? '&nbsp;' : c}</span>`
+        `<span class="logo-char notranslate" translate="no" style="--i:${i}">${c === ' ' ? '&nbsp;' : c}</span>`
       ).join('');
     }
 
